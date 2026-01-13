@@ -3,8 +3,11 @@ module github.com/go-openapi/testify/v2/internal/testintegration/v2
 go 1.25.0
 
 require (
+	github.com/aymanbagabas/go-udiff v0.2.0
 	github.com/go-openapi/testify/enable/colors/v2 v2.4.0
 	github.com/go-openapi/testify/v2 v2.4.2
+	github.com/hexops/gotextdiff v1.0.3
+	github.com/sergi/go-diff v1.3.1
 	go.yaml.in/yaml/v3 v3.0.4
 	pgregory.net/rapid v1.2.0
 )
