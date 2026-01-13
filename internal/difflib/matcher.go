@@ -3,6 +3,8 @@
 
 package difflib
 
+import "maps"
+
 type Match struct {
 	A    int
 	B    int
@@ -269,7 +271,8 @@ func (m *SequenceMatcher) GetGroupedOpCodes(n int) [][]OpCode {
 
 func (m *SequenceMatcher) chainB() {
 	// Populate line -> index mapping
-	b2j := map[string][]int{}
+	b2j := make(map[string][]int, len(m.b))
+	// b2j := map[string][]int{}
 	for i, s := range m.b {
 		indices := b2j[s]
 		indices = append(indices, i)
@@ -277,7 +280,13 @@ func (m *SequenceMatcher) chainB() {
 	}
 
 	// Purge junk elements
-	m.bJunk = map[string]struct{}{}
+	if m.bJunk == nil {
+		m.bJunk = make(map[string]struct{}, len(b2j))
+		// m.bJunk = map[string]struct{}{}
+	} else {
+		clear(m.bJunk)
+	}
+
 	if m.IsJunk != nil {
 		junk := m.bJunk
 		for s := range b2j {
@@ -308,6 +317,7 @@ func (m *SequenceMatcher) chainB() {
 			delete(b2j, s)
 		}
 	}
+
 	m.bPopular = popular
 	m.b2j = b2j
 }
@@ -362,10 +372,11 @@ func (m *SequenceMatcher) findLongestMatch(alo, ahi, blo, bhi int) Match {
 	// during an iteration of the loop, j2len[j] = length of longest
 	// junk-free match ending with a[i-1] and b[j]
 	j2len := map[int]int{}
+	newj2len := map[int]int{}
 	for i := alo; i != ahi; i++ {
 		// look at all instances of a[i] in b; note that because
 		// b2j has no junk keys, the loop is skipped if a[i] is junk
-		newj2len := map[int]int{}
+		clear(newj2len)
 		for _, j := range m.b2j[m.a[i]] {
 			// a[i] matches b[j]
 			if j < blo {
@@ -380,7 +391,11 @@ func (m *SequenceMatcher) findLongestMatch(alo, ahi, blo, bhi int) Match {
 				besti, bestj, bestsize = i-k+1, j-k+1, k
 			}
 		}
-		j2len = newj2len
+		// j2len = newj2len
+		// performance trade-off: clear/copy vs alloc. The latter is atm slightly slower.
+		// That may not be true in all situations: this trade-off favors "small" diffs.
+		clear(j2len)
+		maps.Copy(j2len, newj2len)
 	}
 
 	// Extend the best by non-junk elements on each end.  In particular,

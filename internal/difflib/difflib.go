@@ -5,7 +5,6 @@ package difflib
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"io"
 	"strconv"
@@ -43,16 +42,40 @@ type UnifiedDiff struct {
 
 func (u *UnifiedDiff) applyWriter(buf *bufio.Writer) {
 	u.wsE = u.EqualPrinter(buf)
-	u.wsD = u.DeletePrinter(buf)
-	u.wsU = u.UpdatePrinter(buf)
-	u.wsI = u.InsertPrinter(buf)
-	u.wsO = u.OtherPrinter(buf)
+	if &u.DeletePrinter == &u.EqualPrinter { // pay extra allocation only when printers are distincts (e.g. w/colorization) (alternatively we might want to cache)
+		u.wsD = u.wsE
+	} else {
+		u.wsD = u.DeletePrinter(buf)
+	}
+
+	if &u.UpdatePrinter == &u.EqualPrinter {
+		u.wsU = u.wsE
+	} else {
+		u.wsU = u.UpdatePrinter(buf)
+	}
+
+	if &u.InsertPrinter == &u.EqualPrinter {
+		u.wsI = u.wsE
+	} else {
+		u.wsI = u.InsertPrinter(buf)
+	}
+
+	if &u.OtherPrinter == &u.EqualPrinter {
+		u.wsO = u.wsE
+	} else {
+		u.wsO = u.OtherPrinter(buf)
+	}
+
 	u.wf = u.Formatter(buf)
 }
 
 // GetUnifiedDiffString is like [WriteUnifiedDiff] but returns the diff as a string instead of writing to an [io.Writer].
 func GetUnifiedDiffString(diff UnifiedDiff) (string, error) {
-	w := new(bytes.Buffer)
+	w := buffersPool.Borrow()
+	defer func() {
+		buffersPool.Redeem(w)
+	}()
+
 	err := WriteUnifiedDiff(w, diff)
 
 	return w.String(), err
@@ -82,8 +105,11 @@ func GetUnifiedDiffString(diff UnifiedDiff) (string, error) {
 // The modification times are normally expressed in the ISO 8601 format.
 func WriteUnifiedDiff(writer io.Writer, diff UnifiedDiff) error {
 	diff.Options = optionsWithDefaults(diff.Options)
-	buf := bufio.NewWriter(writer)
-	defer buf.Flush()
+	buf := writersPool.BorrowWithWriter(writer)
+	defer func() {
+		buf.Flush()
+		writersPool.Redeem(buf)
+	}()
 
 	diff.applyWriter(buf)
 
