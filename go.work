@@ -3,7 +3,8 @@ use (
 	./codegen
 	./enable/colors
 	./enable/yaml
+	./internal/benchviz
 	./internal/testintegration
 )
 
-go 1.24.0
+go 1.25
