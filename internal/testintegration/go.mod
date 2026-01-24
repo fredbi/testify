@@ -1,4 +1,4 @@
-module github.com/go-openapi/testify/v2/internal/testintegration/v2
+module github.com/go-openapi/testify/internal/testintegration/v2
 
 go 1.25.0
 
