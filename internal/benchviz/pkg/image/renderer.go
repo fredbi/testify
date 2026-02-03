@@ -1,51 +1,24 @@
+// Package image converts a HTML into a PNG screenshot.
 package image
 
 import (
 	"context"
 	"fmt"
 	"io"
-	"os"
 	"time"
 
 	"github.com/chromedp/chromedp"
 	"github.com/chromedp/chromedp/device"
 )
 
-type Renderer struct {
-	source, dest string
-}
+type Renderer struct{}
 
-func New(source, dest string) *Renderer {
-	return &Renderer{
-		source: source,
-		dest:   dest,
-	}
+func New() *Renderer {
+	return &Renderer{}
 }
 
 // Render a PNG image as a screenshot from a HTML input file.
-func (r *Renderer) Render() (err error) {
-	var dest io.WriteCloser
-
-	if r.dest == "-" {
-		dest = os.Stdout
-	} else {
-		dest, err = os.Create(r.dest)
-		if err != nil {
-			return fmt.Errorf("creating png output file %s: %w", r.dest, err)
-		}
-		defer func() {
-			_ = dest.Close()
-		}()
-	}
-
-	source, err := os.Open(r.source)
-	if err != nil {
-		return fmt.Errorf("opening html source %s: %w", r.source, err)
-	}
-	defer func() {
-		_ = source.Close()
-	}()
-
+func (r *Renderer) Render(dest io.Writer, source io.Reader) error {
 	screenshot, err := r.screenshot(source)
 	if err != nil {
 		return fmt.Errorf("taking screenshot: %w", err)
@@ -66,6 +39,7 @@ func (r *Renderer) screenshot(reader io.Reader) ([]byte, error) {
 		// chromedp.WithBrowserOption(opts ...chromedp.BrowserOption)
 	)
 	defer cancel()
+
 	var screenshot []byte
 	// capture entire browser viewport, returning png with quality=90
 	// localURL := fmt.Sprintf(`file://./%s`, file)

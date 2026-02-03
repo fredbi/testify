@@ -50,6 +50,7 @@ func AllMetricNames() []MetricName {
 
 type Config struct {
 	Name        string
+	IsJSON      bool
 	Environment string
 	Render      Rendering
 	Outputs     Output

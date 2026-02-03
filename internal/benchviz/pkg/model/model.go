@@ -22,8 +22,9 @@ type Category struct {
 	Data        []CategoryData
 }
 
+const sensibleAlocations = 10 // preallocated labels
 func (c Category) Labels() []string {
-	labels := make([]string, 0, 10)
+	labels := make([]string, 0, sensibleAlocations)
 
 	for _, data := range c.Data {
 		for _, series := range data.Series {
@@ -38,7 +39,8 @@ func (c Category) Labels() []string {
 
 // CategoryData holds the data series for one metric and one version.
 //
-// All series in a [CategoryData] are represented as one single data series on the chart.
+// Each series represented by a [CategoryData] is represented as one single data series on the chart.
+//
 // Each point of the data series corresponds to a context for the measurement.
 type CategoryData struct {
 	Version config.Version
@@ -47,6 +49,8 @@ type CategoryData struct {
 }
 
 // SeriesKey uniquely identify a benchmark series.
+//
+// The keys to identify a series are: function, version, context and metric.
 type SeriesKey struct {
 	Function string
 	Version  string
@@ -56,15 +60,15 @@ type SeriesKey struct {
 
 // MetricSeries correspond to a single series composed of points.
 //
-// The Title is used to display in a legend and corresponds to the version
+// The Title is used to display in a legend and corresponds to the version.
 type MetricSeries struct {
 	Title  string
 	Points []MetricPoint
 }
 
-// MetricPoint is a single data point, with a label.
+// MetricPoint is a single data point. Each data point has a label and a float64 value.
 //
-// The label is composed like "{function} - {context} - {version}" and is used in tooltips
+// The label is composed like "{function} - {context} - {version}" and may be used by tooltips
 // when hovering over a data point.
 type MetricPoint struct {
 	Name  string

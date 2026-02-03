@@ -17,7 +17,9 @@ type Builder struct {
 	l        *slog.Logger
 }
 
-// New creates a new chart [Builder].
+// New creates a new chart [Builder], given a [config.Config] and a calculated [model.Scenario].
+//
+// The builder embeds a [slog.Logger] to croak about warnings and issues.
 func New(cfg *config.Config, scenario *model.Scenario) *Builder {
 	return &Builder{
 		cfg:      cfg,
@@ -46,7 +48,7 @@ func (b *Builder) BuildPage() *Page {
 	return page
 }
 
-// buildChart creates a single chart for one metric and one category.
+// buildChart creates a single chart for one metric (possibly two) and one category.
 func (b *Builder) buildChart(category model.Category) *Chart {
 	layoutConfig := b.cfg.Render
 	showLegend := b.cfg.Render.Legend != config.LegendPositionNone
@@ -59,12 +61,12 @@ func (b *Builder) buildChart(category model.Category) *Chart {
 	)
 	chart.SetCategories(xLabels)
 
-	for _, data := range category.Data {
-		for _, series := range data.Series {
+	for _, data := range category.Data { // iterate the series in a category
+		for _, series := range data.Series { // each category, iterate over series
 		}
 	}
 	/*
-		// Build X-axis labels: function × context
+		x // Build X-axis labels: function × context
 		xLabels := b.buildXLabels(category)
 		if len(xLabels) == 0 {
 			return nil
