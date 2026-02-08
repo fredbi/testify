@@ -39,4 +39,6 @@ jobs:
       tag-message-body: ${{ inputs.tag-message-body }}
       enable-tag-signing: 'false' # for testing on fork
       enable-commit-signing: 'false' # for testing on fork
-    secrets: inherit
+    secrets: # need to be explicitly passed since we cross repos and those are not organization secrets for the fork
+      github-app-id: ${{ secrets.CI_BOT_APP_ID }}
+      github-app-private-key: ${{ secrets.CI_BOT_APP_PRIVATE_KEY }}
