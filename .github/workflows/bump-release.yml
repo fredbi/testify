@@ -37,6 +37,6 @@ jobs:
       bump-type: ${{ inputs.bump-type }}
       tag-message-title: ${{ inputs.tag-message-title }}
       tag-message-body: ${{ inputs.tag-message-body }}
-      enable-tag-signing: false # for testing on fork
-      enable-commit-signing: false # for testing on fork
+      enable-tag-signing: 'false' # for testing on fork
+      enable-commit-signing: 'false' # for testing on fork
     secrets: inherit
