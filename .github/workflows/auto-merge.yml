@@ -11,5 +11,5 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-    uses: go-openapi/ci-workflows/.github/workflows/auto-merge.yml@a94fc68a7e32794bbdc77ae00db80bd6567cb6f0 # v0.2.7
+    uses: go-openapi/ci-workflows/.github/workflows/auto-merge.yml@fix/monorepo-release-notes # temporary
     secrets: inherit
