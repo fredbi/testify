@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: Copyright 2025 go-swagger maintainers
 // SPDX-License-Identifier: Apache-2.0
 
-// Package fdleak provides file descriptor leak detection
-// using /proc/self/fd snapshots on Linux.
+// Package fdleak provides file descriptor leak detection.
 //
-// It takes a snapshot of open file descriptors before and after
+// It uses /proc/self/fd snapshots on Linux to take a snapshot
+// of open file descriptors before and after
 // running the tested function. Any file descriptors present in the
 // "after" snapshot but not in the "before" snapshot are considered leaks.
 //

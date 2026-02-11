@@ -70,7 +70,7 @@ func Snapshot() (map[int]FDInfo, error) {
 // and returns a formatted description of leaked file descriptors.
 //
 // Returns the empty string if no leaks are found.
-// The caller is responsible for checking runtime.GOOS before calling.
+// The caller is responsible for checking [runtime.GOOS] before calling.
 func Leaked(tested func()) (string, error) {
 	snapshotMu.Lock()
 	defer snapshotMu.Unlock()
