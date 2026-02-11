@@ -619,6 +619,15 @@ func ExampleNoError() {
 	// Output: success: true
 }
 
+func ExampleNoFileDescriptorLeak() {
+	t := new(testing.T) // should come from testing, e.g. func TestNoFileDescriptorLeak(t *testing.T)
+	success := assert.NoFileDescriptorLeak(t, func() {
+	})
+	fmt.Printf("success: %t\n", success)
+
+	// Output: success: true
+}
+
 func ExampleNoGoRoutineLeak() {
 	t := new(testing.T) // should come from testing, e.g. func TestNoGoRoutineLeak(t *testing.T)
 	success := assert.NoGoRoutineLeak(t, func() {

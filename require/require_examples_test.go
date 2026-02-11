@@ -620,6 +620,15 @@ func ExampleNoError() {
 	// Output: passed
 }
 
+func ExampleNoFileDescriptorLeak() {
+	t := new(testing.T) // should come from testing, e.g. func TestNoFileDescriptorLeak(t *testing.T)
+	require.NoFileDescriptorLeak(t, func() {
+	})
+	fmt.Println("passed")
+
+	// Output: passed
+}
+
 func ExampleNoGoRoutineLeak() {
 	t := new(testing.T) // should come from testing, e.g. func TestNoGoRoutineLeak(t *testing.T)
 	require.NoGoRoutineLeak(t, func() {
