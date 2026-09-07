@@ -19,6 +19,44 @@ func (e TestExampleError) Error() string {
 	return string(e)
 }
 
+// Must is a helper function that returns the return value of a function if it doesn't return an error.
+//
+// It is intended mostly to be used in its "required" variant. With this variant, [Must] returns the value
+// or stops the tests.
+//
+// # Usage
+//
+//	value := Must[int](t)(strconv.Atoi("x"))
+//
+// is equivalent and slightly shorter than:
+//
+//	value, err := strconv.Atoi("x")
+//	require.NoError(t)
+//
+// The "assert" variant works too, but since it is not blocking, [assert.Must] returns the zero value on error
+// and [testing.Failed] should be tested, which defeats the purpose.
+//
+// For go1.27 users, [Must] is also available as a generic method, and the syntax is like:
+//
+//	thisTest := require.New()
+//	value := thisTest.Must[int]()(strconv.Atoi("x"))
+//
+// # Examples
+func Must[V any](t T, msgAndArgs ...any) func(value V, err error) V {
+	// Domain: error
+	return func(value V, err error) V {
+		if err != nil {
+			Fail(t, fmt.Sprintf("received err: %v", err), msgAndArgs...)
+
+			var zero V
+
+			return zero
+		}
+
+		return value
+	}
+}
+
 // ErrTest is an error instance useful for testing.
 //
 // If the code does not care about error specifics, and only needs

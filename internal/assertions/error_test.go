@@ -9,8 +9,18 @@ import (
 	"io"
 	"iter"
 	"slices"
+	"strconv"
 	"testing"
 )
+
+func TestErrorMust(t *testing.T) {
+	t.Parallel()
+
+	result := Must[int](t)(strconv.Atoi("1"))
+	if result != 1 {
+		t.Error("Must should return integer value 1")
+	}
+}
 
 func TestErrorNoError(t *testing.T) {
 	t.Parallel()
