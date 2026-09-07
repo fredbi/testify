@@ -22,6 +22,37 @@ func TestErrorMust(t *testing.T) {
 	}
 }
 
+type A struct {
+	T
+}
+
+func (a *A) Must[V any](value V, err error) V {
+	if err != nil {
+		var zero V
+		FailNow(a.T, "failure")
+		return zero
+	}
+
+	return value
+}
+
+func TestErrorMustBuilds(t *testing.T) {
+	a := A{T: t}
+
+	result:=a.Must(strconv.Atoi("1"))
+
+	fmt.Println(result)
+}
+
+/*
+	func TestErrorMustDoesNotBuild(t *testing.T) {
+		fn := strconv.Atoi
+		result := Must(t)(fn("1"))
+		if result != 1 {
+			t.Error("Must should return integer value 1")
+		}
+	}
+*/
 func TestErrorNoError(t *testing.T) {
 	t.Parallel()
 	mock := new(mockT)

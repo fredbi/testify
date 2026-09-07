@@ -7,7 +7,7 @@ use (
 	./internal/testintegration
 )
 
-go 1.26.0
+go 1.27.0
 
 // No `toolchain` line on purpose. It applies to every command run in the workspace,
 // including CI's `go test work ./...`, which runs the oldstable/stable matrix. Pinning it
